@@ -152,35 +152,35 @@ function write_options_file {
    echo "VERBOSE=${VERBOSE}" >> ${OPTIONS_FILE}
 
    if [ ${SETIMM} -eq 0 ] ; then
-      echo "CHATTR=0" >> ${OPTIONS_FILE}
+      echo "CHANGE_ATTRIBUTES=0" >> ${OPTIONS_FILE}
       echo "IMMUT=${NEWIMM}" >> ${OPTIONS_FILE}
    else
-      echo "CHATTR=1" >> ${OPTIONS_FILE}
+      echo "CHANGE_ATTRIBUTES=1" >> ${OPTIONS_FILE}
       echo "IMMUT=${NEWIMM}" >> ${OPTIONS_FILE}
    fi
 
    if [ ${SETUID} -eq 0 ] ; then
-      echo "CHOWN=0" >> ${OPTIONS_FILE}
-      echo "SETOWN=${NEWUID}" >> ${OPTIONS_FILE}
+      echo "CHANGE_OWNER=0" >> ${OPTIONS_FILE}
+      echo "SET_OWNERSHIP=${NEWUID}" >> ${OPTIONS_FILE}
    else
-      echo "CHOWN=1" >> ${OPTIONS_FILE}
-      echo "SETOWN=${NEWUID}" >> ${OPTIONS_FILE}
+      echo "CHANGE_OWNER=1" >> ${OPTIONS_FILE}
+      echo "SET_OWNERSHIP=${NEWUID}" >> ${OPTIONS_FILE}
    fi
 
    if [ ${SETGID} -eq 0 ] ; then
-      echo "CHGRP=0" >> ${OPTIONS_FILE}
-      echo "SETGRP=${NEWGID}" >> ${OPTIONS_FILE}
+      echo "CHANGE_GROUP=0" >> ${OPTIONS_FILE}
+      echo "SET_GROUP=${NEWGID}" >> ${OPTIONS_FILE}
    else
-      echo "CHGRP=1" >> ${OPTIONS_FILE}
-      echo "SETGRP=${NEWGID}" >> ${OPTIONS_FILE}
+      echo "CHANGE_GROUP=1" >> ${OPTIONS_FILE}
+      echo "SET_GROUP=${NEWGID}" >> ${OPTIONS_FILE}
    fi
 
    if [ ${SETPERMS} -eq 0 ] ; then
-      echo "CHMOD=0" >> ${OPTIONS_FILE}
-      echo "SETMOD=${NEWPERMS}" >> ${OPTIONS_FILE}
+      echo "CHANGE_PERMISSIONS=0" >> ${OPTIONS_FILE}
+      echo "SET_PERMISSIONS=${NEWPERMS}" >> ${OPTIONS_FILE}
    else
-      echo "CHMOD=1" >> ${OPTIONS_FILE}
-      echo "SETMOD=${NEWPERMS}" >> ${OPTIONS_FILE}
+      echo "CHANGE_PERMISSIONS=1" >> ${OPTIONS_FILE}
+      echo "SET_PERMISSIONS=${NEWPERMS}" >> ${OPTIONS_FILE}
    fi
 }
 
@@ -195,6 +195,11 @@ EOPOLICY
 
 # Main Code Block
 {
+   if [ $# -lt 1 ] ; then
+      print_usage
+      exit
+   fi
+
    # Process the command line options
    process_options $*
 
