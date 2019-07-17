@@ -42,7 +42,6 @@ function print_usage {
    -u|--uid        Set the UID on the specified path
    -g|--gid        Set the GID on the specified path
    -p|--perms      Set the permissions on the specified path. Ex: -p 2770
-   -v|--verbose    Execute in verbose mode.
    -D|--debug      Execute in debug mode. Very verbose(set -x).
 
    -h|--help       This help screen
@@ -51,6 +50,7 @@ function print_usage {
    things in a bad way.
 
    OPTION          USAGE
+   -v|--verbose    Execute the callout script in verbose mode.
    -c|--callout    Specifies the path to a callout script executed by mmapplypolicy
    -P|--policy     Specifies the path to the policy file
    -w|--work       Specifies the path to use as a work directory.
@@ -69,7 +69,7 @@ function process_options {
       do case $1 in
          -w|--work)       shift ; WORK_DIR=$1 ;;
          -s|--search)     shift ; SEARCH_PATH=$1 ;;
-         -m|--match)      shift ; MATCH_PATH=$1 ;;
+         -m|--match)      shift ; MATCH_PATTERN=$1 ;;
          -i|--immutable)  shift ; NEWIMM=$1 ; SETIMM=1 ;;
          -u|--uid)        shift ; NEWUID=$1 ; SETUID=1 ;;
          -g|--gid)        shift ; NEWGID=$1 ; SETGID=1 ;;
@@ -129,7 +129,7 @@ function validate_options {
       print_error "You must specify a search path."
    fi
 
-   if [ "x${MATCH_PATH}" == "x" ] ; then
+   if [ "x${MATCH_PATTERN}" == "x" ] ; then
       print_error "You must specify a match path."
    fi
 
@@ -153,10 +153,10 @@ function write_options_file {
 
    if [ ${SETIMM} -eq 0 ] ; then
       echo "CHANGE_ATTRIBUTES=0" >> ${OPTIONS_FILE}
-      echo "IMMUT=${NEWIMM}" >> ${OPTIONS_FILE}
+      echo "IMMUTABLE=${NEWIMM}" >> ${OPTIONS_FILE}
    else
       echo "CHANGE_ATTRIBUTES=1" >> ${OPTIONS_FILE}
-      echo "IMMUT=${NEWIMM}" >> ${OPTIONS_FILE}
+      echo "IMMUTABLE=${NEWIMM}" >> ${OPTIONS_FILE}
    fi
 
    if [ ${SETUID} -eq 0 ] ; then
@@ -188,13 +188,14 @@ function write_policy_file {
 cat << EOPOLICY > ${POLICY_FILE}
 RULE external list 'listall' exec '${CALLOUT_FILE}'
 RULE 'listall' LIST 'listall' DIRECTORIES_PLUS
-     WHERE PATH_NAME LIKE '${MATCH_PATH}%'
+     WHERE PATH_NAME LIKE '${MATCH_PATTERN}%'
 
 EOPOLICY
 }
 
 # Main Code Block
 {
+   # If no parameters specified, show the help screen.
    if [ $# -lt 1 ] ; then
       print_usage
       exit
