@@ -1,5 +1,9 @@
 #!/bin/ksh
-
+#
+# Modify this at your own risk. 
+# If you need to further filter on filename, you can put a grep between
+# the PERL line and the WHILE line in the LIST section.
+#
 PROGDIR=`dirname $0`
 
 

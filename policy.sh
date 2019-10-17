@@ -20,7 +20,7 @@ fi
 DEFAULT_CALLOUT=${MYDIR}/attributes.sh
 DEFAULT_POLICY=${MYDIR}/policy.in
 DEFAULT_IMMUTABILITY="yes"
-DEFAULT_WORK_DIR=/cforge/admin/chad/tmp
+DEFAULT_WORK_DIR=/lsst/admin/chad/tmp
 MMAPPLYPOLICY=`which mmapplypolicy`
 
 # Print the usage screen
