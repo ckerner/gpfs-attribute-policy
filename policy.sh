@@ -20,6 +20,7 @@ fi
 DEFAULT_CALLOUT=${MYDIR}/attributes.sh
 DEFAULT_POLICY=${MYDIR}/policy.in
 DEFAULT_IMMUTABILITY="yes"
+DEFAULT_APPENDONLY="no"
 DEFAULT_WORK_DIR=/lsst/admin/chad/tmp
 MMAPPLYPOLICY=`which mmapplypolicy`
 
@@ -31,6 +32,7 @@ function print_usage {
 
    Usage: ${PRGNAME} [-d|--debug] [-v|--verbose] [-h|--help] 
                      [-i|--immutable yes|no]
+                     [-a|--appendOnly yes|no]
 		     [-u|--uid UID]
 		     [-g|--gid GID]
 		     [-p|--perms PERMISSIONS]
@@ -39,6 +41,7 @@ function print_usage {
 
    OPTION          USAGE
    -i|--immutable  Toggle immutability: YES or NO
+   -a|--appendOnly Toggle files to be appendOnly: YES or NO
    -u|--uid        Set the UID on the specified path
    -g|--gid        Set the GID on the specified path
    -p|--perms      Set the permissions on the specified path. Ex: -p 2770
@@ -71,6 +74,7 @@ function process_options {
          -s|--search)     shift ; SEARCH_PATH=$1 ;;
          -m|--match)      shift ; MATCH_PATTERN=$1 ;;
          -i|--immutable)  shift ; NEWIMM=$1 ; SETIMM=1 ;;
+	 -a|--appendOnly) shift ; NEWAPP=$1 ; SETAPP=1 ;;
          -u|--uid)        shift ; NEWUID=$1 ; SETUID=1 ;;
          -g|--gid)        shift ; NEWGID=$1 ; SETGID=1 ;;
          -p|--perms)      shift ; NEWPERMS=$1 ; SETPERMS=1 ;;
@@ -97,6 +101,7 @@ function validate_options {
    [[ ${SETGID:=0} ]]
    [[ ${SETPERMS:=0} ]]
    [[ ${NEWIMM:=$DEFAULT_IMMUTABILITY} ]]
+   [[ ${NEWAPP:=$DEFAULT_APPENDONLY} ]]
    [[ ${POLICY_FILE:=$DEFAULT_POLICY} ]]
    [[ ${CALLOUT_FILE:=$DEFAULT_CALLOUT} ]]
    [[ ${WORK_DIR:=$DEFAULT_WORK_DIR} ]]
@@ -104,6 +109,12 @@ function validate_options {
    if [ ${SETIMM} -eq 1 ] ; then
       if [ "x${NEWIMM}" == "x" ] ; then
          print_error "You must specify a immutability as YES or NO."
+      fi
+   fi
+
+   if [ ${SETAPP} -eq 1 ] ; then
+      if [ "x${NEWAPP}" == "x" ] ; then
+         print_error "You must specify a appendOnly as YES or NO."
       fi
    fi
 
@@ -157,6 +168,14 @@ function write_options_file {
    else
       echo "CHANGE_ATTRIBUTES=1" >> ${OPTIONS_FILE}
       echo "IMMUTABLE=${NEWIMM}" >> ${OPTIONS_FILE}
+   fi
+
+   if [ ${SETAPP} -eq 0 ] ; then
+      echo "CHANGE_APPEND=0" >> ${OPTIONS_FILE}
+      echo "APPEND=${NEWAPP}" >> ${OPTIONS_FILE}
+   else
+      echo "CHANGE_APPEND=1" >> ${OPTIONS_FILE}
+      echo "APPEND=${NEWAPP}" >> ${OPTIONS_FILE}
    fi
 
    if [ ${SETUID} -eq 0 ] ; then

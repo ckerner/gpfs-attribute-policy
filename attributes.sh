@@ -28,7 +28,21 @@ case $1 in
 
            # Set the immutability
            if [ ${CHANGE_ATTRIBUTES} -eq 1 ] ; then
-              /usr/lpp/mmfs/bin/mmchattr -i ${IMMUTABLE} -I yes "${FILENAME}"
+	      if [ ${CHANGE_APPEND} -eq 1 ] ; then
+		 if [[ -f ${FILENAME} ]] ; then
+                    /usr/lpp/mmfs/bin/mmchattr -a ${APPEND} -i ${IMMUTABLE} -I yes "${FILENAME}"
+		 else
+                    /usr/lpp/mmfs/bin/mmchattr -i ${IMMUTABLE} -I yes "${FILENAME}"
+		 fi
+	      else
+                 /usr/lpp/mmfs/bin/mmchattr -i ${IMMUTABLE} -I yes "${FILENAME}"
+              fi
+	   else
+	      if [ ${CHANGE_APPEND} -eq 1 ] ; then
+		 if [[ -f ${FILENAME} ]] ; then
+                    /usr/lpp/mmfs/bin/mmchattr -a ${APPEND} -I yes "${FILENAME}"
+		 fi
+	      fi
            fi
 
            # Set the owner
